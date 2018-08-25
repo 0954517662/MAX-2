@@ -1,28 +1,43 @@
 #-*- coding: utf-8 -*-
 from linepy import *
+from akad.ttypes import *
+from multiprocessing import Pool, Process
+from akad.ttypes import ContentType as Type
 from datetime import datetime
-from time import sleep
+import time,random,sys,json,codecs,threading,glob,re,os,subprocess
 from bs4 import BeautifulSoup
 from humanfriendly import format_timespan, format_size, format_number, format_length
-import time, random, sys, json, codecs, threading, glob, re, string, os, requests, subprocess, six, ast, pytz, urllib, urllib.parse,timeit,data,atexit
+import time, random, sys, json, codecs, threading, glob, re, string, os, requests, subprocess, six, ast, pytz, urllib, urllib.parse,youtube_dl,pafy,timeit,atexit,traceback
 from gtts import gTTS
 from googletrans import Translator
+#==========
 botStart = time.time()
+#==========
 cl = LINE()
 cl.log("Auth Token : " + str(cl.authToken))
+channelToken = cl.getChannelResult()
+cl.log("Channel Token : " + str(channelToken))
 
 kl = LINE()
 kl.log("Auth Token : " + str(kl.authToken))
+channelToken = kl.getChannelResult()
+kl.log("Channel Token : " + str(channelToken))
 
 sb = LINE()
 sb.log("Auth Token : " + str(kl.authToken))
+channelToken = sb.getChannelResult()
+sb.log("Channel Token : " + str(channelToken))
 
 kt = LINE()
 kt.log("Auth Token : " + str(kl.authToken))
+channelToken = kt.getChannelResult()
+kt.log("Channel Token : " + str(channelToken))
 
 sa = LINE()
 sa.log("Auth Token : " + str(kl.authToken))
-print ("====和泉登入成功====")
+channelToken = sa.getChannelResult()
+sa.log("Channel Token : " + str(channelToken))
+
 oepoll = OEPoll(cl)
 readOpen = codecs.open("read.json","r","utf-8")
 settingsOpen = codecs.open("temp.json","r","utf-8")
@@ -55,8 +70,8 @@ myProfile["displayName"] = clProfile.displayName
 myProfile["statusMessage"] = clProfile.statusMessage
 myProfile["pictureStatus"] = clProfile.pictureStatus
 msg_dict = {}
-bl = [""]
-god = ['u85ee80cfb293599510d0c17ab25a5c98']
+bl = ["u4862fe4b182b2fd194a3108e2f3662e8"]
+god = ['u4862fe4b182b2fd194a3108e2f3662e8','ue1d6a794435130d139f9c5dde19aa9e5']
 def cTime_to_datetime(unixtime):
     return datetime.datetime.fromtimestamp(int(str(unixtime)[:len(str(unixtime))-3]))
 def restartBot():
@@ -93,7 +108,7 @@ def sendMessageWithMention(to, mid):
         logError(error)
 def helpmessage():
     helpMessage = """
-    〘God指令〙
+    〘【さัএπัஞ✵ບิथℓℓҨतΩ】〙
     【rebot】重新開機
     【killban】踢出黑單
     【cancel】取消群組邀請
@@ -167,7 +182,7 @@ def helpmessage():
     【sf】關閉已讀點
     【sr】更新已讀點
     【r】查看當前已讀
-    ⇒Credits By.Arasi™⇐"""
+    ⇒ By.【さัএπัஞ✵ບิथℓℓҨतΩ】⇐"""
     return helpMessage
 def lineBot(op):
     try:
@@ -495,12 +510,12 @@ def lineBot(op):
                         elif text.lower() == 'tagall':
                             group = cl.getGroup(msg.to)
                             nama = [contact.mid for contact in group.members]
-                            k = len(nama)//100
+                            k = len(nama)//20
                             for a in range(k+1):
                                 txt = u''
                                 s=0
                                 b=[]
-                                for i in group.members[a*100 : (a+1)*100]:
+                                for i in group.members[a*20 : (a+1)*20]:
                                     b.append({"S":str(s), "E" :str(s+6), "M":i.mid})
                                     s += 7
                                     txt += u'@Alin \n'
@@ -911,7 +926,7 @@ def lineBot(op):
                         cl.sendMessage(to,format(str(elapsed_time)) + "秒")    
                     elif text.lower() == 'set':
                         try:
-                            ret_ = "[ 設定 ]"
+                            ret_ = "【さัএπัஞ✵ບิथℓℓҨतΩ】"
                             if settings["autoAdd"] == True: ret_ += "\n自動加入好友 [ON]"
                             else: ret_ += "\n自動加入好友 [OFF]"
                             if settings["autoJoin"] == True: ret_ += "\n自動加入群組 [ON]"
@@ -943,7 +958,7 @@ def lineBot(op):
                             helpMessage = helpmessage()
                             cl.sendMessage(to, str(helpMessage))
                             cl.sendMessage(to, "我的作者")
-                            cl.sendContact(to, "u85ee80cfb293599510d0c17ab25a5c98")
+                            cl.sendContact(to, "u4862fe4b182b2fd194a3108e2f3662e8")
                     elif text.lower() == 'test':
                         cl.sendMessage(to, "運行中......")
                         kl.sendMessage(to, "運行中......")
@@ -1007,7 +1022,7 @@ def lineBot(op):
                     elif text.lower() == 'about':
                         try:
                             arr = []
-                            owner = "u85ee80cfb293599510d0c17ab25a5c98"
+                            owner = "u4862fe4b182b2fd194a3108e2f3662e8"
                             creator = cl.getContact(owner)
                             contact = cl.getContact(clMID)
                             group = cl.getGroup(to)
